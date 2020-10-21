@@ -77,7 +77,7 @@ class KNearestNeighbor(object):
                 #####################################################################
                 # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-                pass
+                dists[i,j] = np.sqrt(np.sum(np.square(X[i] - self.X_train[j])))
 
                 # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -100,9 +100,7 @@ class KNearestNeighbor(object):
             # Do not use np.linalg.norm().                                        #
             #######################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
-
+            dists[i, :] = np.sqrt(np.sum(np.square(self.X_train - X[i]), axis=1))
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
 
@@ -131,7 +129,15 @@ class KNearestNeighbor(object):
         #########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        # tmp = X.dot(self.X_train.T)
+        # tmp = np.sqrt(tmp)
+        X_squared = np.sum(np.square(X), axis=1)
+        X_train_squared = np.sum(np.square(self.X_train), axis=1)
+        mid_part = X.dot(self.X_train.T) * (-2)
+        tmp = X_squared.reshape(X_squared.shape[0], 1) + X_train_squared + \
+        + mid_part
+        dists = np.sqrt(tmp)
+        # print(tmp.shape)
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         return dists
@@ -164,8 +170,8 @@ class KNearestNeighbor(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
-
+            indexes_for_current_item = np.argsort(dists[i])[:k]
+            closest_y = self.y_train[indexes_for_current_item]
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
             #########################################################################
             # TODO:                                                                 #
@@ -175,8 +181,10 @@ class KNearestNeighbor(object):
             # label.                                                                #
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-            pass
+            unique, counts = np.unique(closest_y, return_counts=True)
+            label_counts = dict(zip(counts, unique))
+            sorted_counts = sorted(counts, reverse=True)[0]
+            y_pred[i] = label_counts[sorted_counts]
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
